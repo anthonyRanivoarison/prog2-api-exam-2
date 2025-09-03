@@ -1,0 +1,127 @@
+openapi: "3.1.0"
+info:
+  title: STD24213
+  description: This is a specification of STD24213
+  version: "1.0"
+servers:
+  - url: http://localhost:8000
+tags:
+  - name: Ping
+    description: Ping tag
+  - name: Cars
+    description: Car tag
+
+components:
+  schemas:
+    Characteristics:
+      properties:
+        max_speed:
+          type: integer
+          example: 350
+        max_fuel_capacity:
+          type: integer
+          example: 200
+    Car:
+      properties:
+        id:
+          type: string
+          example: "123-456-7890"
+        brand:
+          type: string
+          example: "Porsche"
+        model:
+          type: string
+          example: "911"
+        characteristics:
+          $ref: '#/components/schemas/Characteristics'
+
+paths:
+  /ping:
+    get:
+      tags:
+        - Ping
+      summary: Get pong message
+      responses:
+        200:
+          description: Pong message
+  /cars:
+    post:
+      tags:
+        - Cars
+      summary: Create a new car
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Car'
+      responses:
+        201:
+          description: Car created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Car'
+    get:
+      tags:
+        - Cars
+      summary: Get all cars
+      responses:
+        200:
+          description: List of cars
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Car'
+  /cars/{id}:
+    get:
+      tags:
+        - Cars
+      summary: Get a car by ID
+      parameters:
+        in: path
+        name: id
+        required: true
+      responses:
+        200:
+          description: A car
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Car'
+        404:
+          description: No car found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: No car found with ID 123-456-7890
+
+  /cars/{id}/characteristics:
+    put:
+      tags:
+        - Cars
+      summary: Update a car
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Characteristics'
+      responses:
+        200:
+          description: Car updated
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Car with ID 123-456-7890 updated successfully
+        404:
+          description: No car found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Car with ID 123-456-7890 doesn't exist or not found
